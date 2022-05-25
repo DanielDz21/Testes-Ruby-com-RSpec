@@ -1,4 +1,24 @@
 class EnemiesController < ApplicationController
+  before_action :set_enemy, only: %i[update destroy show]
+
+  def index
+    @enemies = Enemy.all
+    render json: @enemies, status: :ok
+  end
+
+  def show
+    render json: @enemy, status: :ok
+  end
+
+  def create
+    @enemy = Enemy.new(enemy_params)
+    if @enemy.save
+      render json: @enemy, status: :created
+    else
+      render json: @enemy.errors.full_messages, status: :unprocessable_entity
+    end
+  end
+
   def update
     if @enemy.update(enemy_params)
       render json: @enemy, status: :ok
@@ -15,7 +35,7 @@ class EnemiesController < ApplicationController
   private
 
   def enemy_params
-    params.require(:enemy).permit(:name, :kind, :power_base, :power_step, :level)
+    params.permit(:name, :kind, :power_base, :power_step, :level)
   end
 
   def set_enemy
